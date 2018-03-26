@@ -153,7 +153,7 @@ where $$\epsilon \sim \mathcal{N}(0,1)$$. It is easy to check that the two ways 
 
 The biggest advantage of this approach is that we many now write the gradient of an expectation with respect to $$q(z)$$ (for any $$f$$) as
 {%math%}
- \nabla_\phi \mathbb{E}_{z \sim q(z\mid x)}\left[ f(x,z) \right] = \nabla_\phi \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ f(x,g(z,\epsilon)) \right] = \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ \nabla_\phi f(x,g(z,\epsilon)) \right].
+ \nabla_\phi \mathbb{E}_{z \sim q(z\mid x)}\left[ f(x,z) \right] = \nabla_\phi \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ f(x,g(\epsilon, x)) \right] = \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ \nabla_\phi f(x,g(\epsilon, x)) \right].
 {%endmath%}
 The gradient is now inside the expectation and we may use Monte Carlo to get an estimate of the right-hand term.
 This approach will have a much lower variance{%sidenote 1 'For more details as to why, have a look at the appendix of the paper by [Rezende et al.](https://arxiv.org/pdf/1401.4082.pdf)'%} than the score function estimator, and will enable us to learn models that we otherwise couldn't learn.
@@ -184,7 +184,7 @@ This algorithm is applicable to any deep generative model $$p_\theta$$ with late
 A variational auto-encoder uses the AEVB algorithm to learn a specific model $$p$$ using a particular encoder $$q$$. The model $$p$$ is parametrized as
 {%math%}
 \begin{align*}
-p(x\mid z) & = \mathcal{N}(z; \vec\mu(z), \vec \sigma(z) \odot I) \\
+p(x\mid z) & = \mathcal{N}(x; \vec\mu(z), \vec \sigma(z) \odot I) \\
 p(z) & = \mathcal{N}(z; 0, I),
 \end{align*}
 {%endmath%}

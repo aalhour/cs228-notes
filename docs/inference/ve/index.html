@@ -78,13 +78,13 @@
 
 
 <p>Next, we turn our attention to the problem of <em>inference</em> in graphical models.
-Given a probabilistic model (such as a Bayes net on an MRF), we are interested in using it to answer useful questions, e.g. determining the probability that a given email is spam.  More formally, we will be focusing on two types of questions:</p>
+Given a probabilistic model (such as a Bayes net or an MRF), we are interested in using it to answer useful questions, e.g., determining the probability that a given email is spam.  More formally, we will be focusing on two types of questions:</p>
 
 <ul>
   <li><em>Marginal inference</em>: what is the probability of a given variable in our model after we sum everything else out (e.g. probability of spam vs non-spam)?</li>
 </ul>
 <div class="mathblock"><script type="math/tex; mode=display">
-p(y=1) = \sum_{x_2} \sum_{x_2}  \cdots \sum_{x_n} p(y=1,x_1, x_2, ..., x_n).
+p(y=1) = \sum_{x_1} \sum_{x_2}  \cdots \sum_{x_n} p(y=1,x_1, x_2, ..., x_n).
 </script></div>
 <ul>
   <li><em>Maximum a posteriori (MAP) inference</em>: what is the most likely assignment to the variables in the model (possibly conditioned on evidence).</li>
@@ -99,7 +99,7 @@ p(y=1) = \sum_{x_2} \sum_{x_2}  \cdots \sum_{x_n} p(y=1,x_1, x_2, ..., x_n).
 
 <h2 id="an-illustrative-example">An illustrative example</h2>
 
-<p>Consider first the problem of marginal inference. Suppose for simplicity that we a given a chain Bayesian network, i.e. a probability of the form</p>
+<p>Consider first the problem of marginal inference. Suppose for simplicity that we are given a chain Bayesian network, i.e. a probability of the form</p>
 <div class="mathblock"><script type="math/tex; mode=display">
 p(x_1,...,x_n) = p(x_1) \prod_{i=2}^n p(x_i \mid x_{i-1}).
 </script></div>
@@ -150,7 +150,7 @@ p(x_1,..,x_n) = \prod_{c \in C} \phi_c(x_c).
 </script></div>
 <p>The scope of <script type="math/tex">\phi_3</script> is defined as the union of the variables in the scopes of <script type="math/tex">\phi_1, \phi_2</script>; also <script type="math/tex">x_c^{(i)}</script> denotes an assignment to the variables in the scope of <script type="math/tex">\phi_i</script> defined by the restriction of <script type="math/tex">x_c</script> to that scope. For example, we define <script type="math/tex">\phi_3(a,b,c) := \phi_1(a,b) \times \phi_2(b,c)</script>.</p>
 
-<p>Next, the marginalization operation “locally” eliminates a set of variable from a factor. If we have a factor <script type="math/tex">\phi(X,Y)</script> over two sets of variables <script type="math/tex">X,Y</script>, marginalizing <script type="math/tex">Y</script> produces a new factor</p>
+<p>Next, the marginalization operation “locally” eliminates a set of variables from a factor. If we have a factor <script type="math/tex">\phi(X,Y)</script> over two sets of variables <script type="math/tex">X,Y</script>, marginalizing <script type="math/tex">Y</script> produces a new factor</p>
 <div class="mathblock"><script type="math/tex; mode=display">
 \tau(x) = \sum_{y} \phi(x, y),
 </script></div>
@@ -181,6 +181,8 @@ Essentially, we loop over the variables as ordered by <script type="math/tex">O<
   <li>Marginalize out <script type="math/tex">X_i</script> to obtain new factor <script type="math/tex">\tau</script></li>
   <li>Replace the factors in <script type="math/tex">\Phi_i</script> by <script type="math/tex">\tau</script></li>
 </ol>
+
+<p>A former CS228 student has created an <a href="http://pgmlearning.herokuapp.com/vElimApp">interactive web simulation</a> for visualizing the variable elimination algorithm. Feel free to play around with it and, if you do, please submit any feedback or bugs through the Feedback button on the web app.</p>
 
 <h3 id="examples">Examples</h3>
 
@@ -273,8 +275,8 @@ P(Y \mid E = e) = \frac{P(Y, E = e)}{P(E=e)},
   <!--      -->
   <!-- </ul> -->
 <div class="credits">
-<!-- <span>&#38;copy; 2017 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
-<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2017</span> 
+<!-- <span>&#38;copy; 2018 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
+<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2018</span> 
 </div>  
 </footer>
 

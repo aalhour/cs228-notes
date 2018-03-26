@@ -235,7 +235,7 @@ z = g_{\mu, \sigma}(\epsilon) = \mu + \epsilon \cdot \sigma,
 
 <p>The biggest advantage of this approach is that we many now write the gradient of an expectation with respect to <script type="math/tex">q(z)</script> (for any <script type="math/tex">f</script>) as</p>
 <div class="mathblock"><script type="math/tex; mode=display">
- \nabla_\phi \mathbb{E}_{z \sim q(z\mid x)}\left[ f(x,z) \right] = \nabla_\phi \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ f(x,g(z,\epsilon)) \right] = \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ \nabla_\phi f(x,g(z,\epsilon)) \right].
+ \nabla_\phi \mathbb{E}_{z \sim q(z\mid x)}\left[ f(x,z) \right] = \nabla_\phi \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ f(x,g(\epsilon, x)) \right] = \mathbb{E}_{\epsilon \sim p(\epsilon)}\left[ \nabla_\phi f(x,g(\epsilon, x)) \right].
 </script></div>
 <p>The gradient is now inside the expectation and we may use Monte Carlo to get an estimate of the right-hand term.
 This approach will have a much lower variance<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle" /><span class="sidenote">For more details as to why, have a look at the appendix of the paper by <a href="https://arxiv.org/pdf/1401.4082.pdf">Rezende et al.</a> </span> than the score function estimator, and will enable us to learn models that we otherwise couldn’t learn.</p>
@@ -266,7 +266,7 @@ This algorithm is applicable to any deep generative model <script type="math/tex
 <p>A variational auto-encoder uses the AEVB algorithm to learn a specific model <script type="math/tex">p</script> using a particular encoder <script type="math/tex">q</script>. The model <script type="math/tex">p</script> is parametrized as</p>
 <div class="mathblock"><script type="math/tex; mode=display">
 \begin{align*}
-p(x\mid z) & = \mathcal{N}(z; \vec\mu(z), \vec \sigma(z) \odot I) \\
+p(x\mid z) & = \mathcal{N}(x; \vec\mu(z), \vec \sigma(z) \odot I) \\
 p(z) & = \mathcal{N}(z; 0, I),
 \end{align*}
 </script></div>
@@ -329,8 +329,8 @@ The VAE can be applied to images <script type="math/tex">x</script> in order to 
   <!--      -->
   <!-- </ul> -->
 <div class="credits">
-<!-- <span>&#38;copy; 2017 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
-<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2017</span> 
+<!-- <span>&#38;copy; 2018 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
+<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2018</span> 
 </div>  
 </footer>
 

@@ -2,7 +2,7 @@
 layout: post
 title: Markov random fields
 ---
-Bayesian networks are a class of models that can compactly represent many interesting probability distributions. However, we have seen in the previous chapter that some distributions cannot be perfectly represented by a Bayesian network. 
+Bayesian networks are a class of models that can compactly represent many interesting probability distributions. However, we have seen in the previous chapter that some distributions cannot be perfectly represented by a Bayesian network.
 
 In such cases, unless we want to introduce false independencies among the variables of our model, we must fall back to a less compact representation (which can be viewed as a graph with additional, unnecessary edges). This leads to extra, unnecessary parameters in the model, and makes it more difficult to learn these parameters and to make predictions.
 
@@ -58,7 +58,7 @@ Thus, given a graph $$G$$, our probability distribution may contain factors whos
 
 {% marginfigure 'nb1' 'assets/img/mrf2.png' 'Examples of directed models for our four-variable voting example. None of them can accurately express our prior knowledge about the dependency structure among the variables.'%}
 In our earlier voting example, we had a distribution over $$A,B,C,D$$ that satisfied $$A \perp C \mid  \{B,D\}$$ and $$B \perp D \mid  \{A,C\}$$ (because only friends directly influence a person's vote). We can easily check by counter-example that these independencies cannot be perfectly represented by a Bayesian network.
-However, the MRF turns out to a perfect map for this distribution.
+However, the MRF turns out to be a perfect map for this distribution.
 
 More generally, MRFs have several advantages over directed models:
 
@@ -83,7 +83,7 @@ Recall that in the case of Bayesian networks, we defined a set of independencies
 {% marginfigure 'markovblanket' 'assets/img/markovblanket.png' 'In an MRF, a node $$X$$ is independent from the rest of the graph given its neighbors (which are reffered to at the Markov blanket of $$X$$.'%} 
 What independencies can be then described by an undirected MRF? The answer here is very simple and intuitive: variables $$x,y$$ are dependent if they are connected by a path of unobserved variables. However, if $$x$$'s neighbors are all observed, then $$x$$ is independent of all the other variables, since they influence $$x$$ only via its neighbors.
 
-In particular, if a set of observed variables forms a cutset between two halves of the graph, then variables in one half are independent from ones in the other.
+In particular, if a set of observed variables forms a cut-set between two halves of the graph, then variables in one half are independent from ones in the other.
 
 {% maincolumn 'assets/img/cutset.png' '' %}
 
@@ -131,7 +131,7 @@ Given a model of this form, we can jointly infer the structured label $$y$$ usin
 
 ### CRF features
 
-In most practical applications, we further assume that the factorss $$\phi_c(x_c,y_c)$$ are of the form
+In most practical applications, we further assume that the factors $$\phi_c(x_c,y_c)$$ are of the form
 {% math %}
 \phi_c(x_c,y_c) = \exp(w_c^T f_c(x_c, y_c)),
 {% endmath %}
@@ -146,6 +146,14 @@ The most important realization that need to be made about CRF features is that t
 where $$\phi'_i(y_i) = \phi_i(x,y_i)$$. Using global features only changes the values of the factors, but not their scope, which possesses the same type of chain structure. We will see in the next section that this structure is all that is needed to ensure we can solve this optimization problem tractably.
 
 This observation may be interpreted in a slightly more general form. If we were to model $$p(x,y)$$ using an MRF (viewed as a single model over $$x, y$$ with normalizing constant $$Z = \sum_{x,y} \tp(x,y)$$), then we need to fit two distributions to the data: $$p(y\mid x)$$ and $$p(x)$$. However, if all we are interested in is predicting $$y$$ given $$x$$, then modeling $$p(x)$$ is unnecessary. In fact, it may be disadvantageous to do so statistically (e.g. we may not have enough data to fit both $$p(y\mid x)$$ and $$p(x)$$; since the models have shared parameters, fitting one may result in the best parameters for the other) and it may not be a good idea computationally (we need to make simplifying assumptions in the distribution so that $$p(x)$$ can be handled tractably). CRFs forgo of this assumption, and often perform better on prediction tasks.
+
+## Factor Graphs
+
+It is often useful to view MRFs in a way where factors and variables are explicit and separate in the representation. A factor graph is one such way to do this. A factor graph is a bipartite graph where one group is the variables in the distribution being modeled, and the other group is the factors defined on these variables. Edges go between factors and variables that those factors depend on. 
+
+{% maincolumn 'assets/img/factor-graph.png' 'Example of a factor graph with three variables and four factors.' %}
+
+This view allows us to more readily see the factor dependencies between variables, and later we'll see it allows us to compute some probability distributions more easily.
 
 <br/>
 

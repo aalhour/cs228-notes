@@ -29,7 +29,7 @@ Now suppose that after computing $$p(x_i)$$, we wanted to compute $$p(x_k)$$ as 
 
 ### A message-passing algorithm
 
-A key question here is how exactly do we compute all the message we need. Notice for example, that the messages to $$x_k$$ from the side of $$x_i$$ will need to be recomputed.
+A key question here is how exactly do we compute all the messages we need. Notice for example, that the messages to $$x_k$$ from the side of $$x_i$$ will need to be recomputed.
 
 The answer is very simple: a node $$x_i$$ sends a message to a neighbor $$x_j$$ whenever it has received messages from all nodes besides $$x_j$$. It's a fun exercise to the reader to show that there will always be a node with a message to send, unless all the messages have been sent out. This will happen after precisely {%m%}2|E|{%em%} steps, since each edge can receive messages only twice: once from $$x_i \to x_j$$, and once more in the opposite direction.
 
@@ -49,9 +49,27 @@ Because of this observation, after we have computed all messages, we may answer 
 p(x_i) = \prod_{\ell \in N(i)} m_{\ell \to i}(x_i).
 {% endmath %}
 
+### Sum-product message passing for factor trees
+
+The sum-product message passing variant of belief propgation can also be applied to factor trees, with a slight modification. Recall that a factor graph is a bipartite graph with edges going between variables and factors, with an edge signifying a factor depends on a variable. We can perform VE on factor graphs through a modified version of the above algorithm.
+
+On factor graphs, we have two types of messages: variable-to-factor messages $$\nu$$ and factor-to-variable messages $$\mu$$.
+
+{% maincolumn 'assets/img/factor-graph-messages.png' %}
+
+Both messages require taking a product, but only the factor-to-variable messages $$\mu$$ require a sum.
+
+{% math %}
+\nu_{var(i)\to fac(s)}(x_i) = \prod_{t\in\mathcal N(i)\setminus s}\mu_{fac(t)\to var(i)}(x_i) \\
+
+\mu_{fac(s)\to var(i)}(x_i) = \sum_{x_{\mathcal N(s)\setminus i}}f_s(x_{\mathcal N(s)})\prod_{t\in\mathcal N(i)\setminus s}\nu_{var(j)\to fac(s)}(x_j)
+{% endmath %}
+
+So now the algorithm proceeds in the same way as above: as long as there is a factor or variable ready to transmit to a variable or factor, respectively, send the appropriate factor-to-variable or variable-to-factor message as defined above.
+
 ### Max-product message passing
 
-So far, we have said very little about the second type of inference we are interested to perform, which are MAP queries
+So far, we have said very little about the second type of inference we are interested in performing, which are MAP queries
 {% math %}
 \max_{x_1, \dots, x_n} p(x_1,...,x_n).
 {% endmath %}
@@ -76,9 +94,9 @@ To compute the mode $$\tp^*$$ of $$\tp(x_1,...,x_n)$$, we simply replace sums wi
 \end{align*}
 {% endmath %}
 
-The key property that makes this work is the distributivity of both the sum and the max operator over products. Since both problems are essentially equivalent (after swapping the corresponding operators), we may reuse all of the machinery developed for marginal inference and apply it directly to MAP inference.
+The key property that makes this work is the distributivity of both the sum and the max operator over products. Since both problems are essentially equivalent (after swapping the corresponding operators), we may reuse all of the machinery developed for marginal inference and apply it directly to MAP inference. Note that this also applies to factor trees.
 
-There is a small caveat in that we often want not just the mode of a distribution, but also its most probable assignment. This problem can be easily solved by keeping *back-pointers* during the optimization procedure. For instance, in the above example, we would keep a backpointer to the best assignment to $$x_1$$ given each assignment to $$x_2$$, a pointer to the best assignment to $$x_2$$ given each assignment to $$x_3$$, and so on.
+There is a small caveat in that we often want not just the mode of a distribution, but also its most probable assignment. This problem can be easily solved by keeping *back-pointers* during the optimization procedure. For instance, in the above example, we would keep a backpointer to the best assignment to $$x_1$$ given each assignment to $$x_2$$, a pointer to the best assignment to $$x_2$$ given each assignment to $$x_3,$$ and so on.
 
 ## Junction tree algorithm
 
@@ -95,7 +113,7 @@ Suppose that we are performing marginal inference and that we are given an MRF o
 p(x_1,..,x_n) = \frac{1}{Z} \prod_{c \in C} \phi_c(x_c),
 {% endmath %}
 
-Crucially, we will assume that the cliques $$c$$ have a form of path structure, meaning that we can find an ordering $$x_c^{(1)}, ..., x_c^{(n)}$$ with the property that if $$x_i \in x_c^{(j)}$$ and $$x_i \in x_c^{(k)}$$ for some variable $$x_i$$ then $$x_i \in x_c^{(\ell)}$$ for all $$x_c^{(\ell)}$$ on the path between $$x_c^{(j)}$$ and $$x_c^{(k)}$$. We refer to this assumption as the *running intersection* (RIP) property.
+Crucially, we will assume that the cliques $$c$$ have a form of path structure, meaning that we can find an ordering $$x_c^{(1)}, ..., x_c^{(n)}$$ with the property that if $$x_i \in x_c^{(j)}$$ and $$x_i \in x_c^{(k)}$$ for some variable $$x_i$$ then $$x_i \in x_c^{(\ell)}$$ for all $$x_c^{(\ell)}$$ on the path between $$x_c^{(j)}$$ and $$x_c^{(k)}$$. We refer to this assumption as the *running intersection* property (RIP).
 {% maincolumn 'assets/img/junctionpath.png' 'A chain MRF whose cliques are organized into a chain structure. Round nodes represent cliques and the variables in their scope; rectangular nodes indicate sepsets, which are variables forming the intersection of the scopes of two neighboring cliques'%}
 
 Suppose that we are interested in computing the marginal probability $$p(x_1)$$ in the above example. Given our assumptions, we may again use a form of variable elimination to 
@@ -121,7 +139,7 @@ A junction tree $$T=(C, E_T)$$ over $$G = (\Xc, E_G)$$ is a tree whose nodes $$c
 - *Family preservation*: For each factor $$\phi$$, there is a cluster $$c$$ such that $$\text{Scope}[\phi] \subseteq x_c$$.
 - *Running intersection*: For every pair of clusters $$c^{(i)}, c^{(j)}$$, every cluster on the path between $$c^{(i)}, c^{(j)}$$ contains $$x_c^{(i)} \cap x_c^{(j)}$$.
 
-Here is an example of an MRF with graph $$G$$ and junction tree $$T$$. MRF potentials are denoted using different colors; circles indicates nodes of the junction trees; rectangular nodes represent *sepsets*, which are sets of variables shared by neighboring clusters.
+Here is an example of an MRF with graph $$G$$ and junction tree $$T$$. MRF potentials are denoted using different colors; circles indicates nodes of the junction trees; rectangular nodes represent *sepsets* (short for "separation sets"), which are sets of variables shared by neighboring clusters.
 
 {% maincolumn 'assets/img/junctiontree.png' 'An MRF with graph G and its junction tree T.'%}
 {% marginfigure 'jtt' 'assets/img/jt-over-tree.png' 'A junction tree defined over a tree graph. Clusters correspond to edges.'%}
@@ -129,7 +147,7 @@ Here is an example of an MRF with graph $$G$$ and junction tree $$T$$. MRF poten
 
 Note that we may always find a trivial junction tree with one node containing all the variables in the original graph. However, such trees are useless because they will not result in efficient marginalization algorithms. 
 
-Optimal trees are one that make the clusters as small and modular as possible; unfortunately, it is again NP-hard to find the optimal tree. We will see below some practical ways in which we can find good junction trees 
+Optimal trees are one that make the clusters as small and modular as possible; unfortunately, it is again NP-hard to find the optimal tree. We will see below some practical ways in which we can find good junction trees. 
 
 A special case when we *can* find the optimal junction tree is when $$G$$ itself is a tree. In that case, we may define a cluster for each edge in the tree. It is not hard to check that the result satisfies the above definition.
 
@@ -144,12 +162,12 @@ p(x_1,..,x_n) = \frac{1}{Z} \prod_{c \in C} \psi_c(x_c).
 
 Then, at each step of the algorithm, we choose a pair of adjacent clusters $$c^{(i)}, c^{(j)}$$ in $$T$$ and compute a message whose scope is the sepset $$S_{ij}$$ between the two clusters:
 {% math %}
-m_{i\to j}(S_{ij}) = \sum_{x_c \backslash S_{ij}} \psi(x_c) \prod_{\ell \in N(i) \backslash j} m_{\ell \to i}(S_{\ell i}).
+m_{i\to j}(S_{ij}) = \sum_{x_c \backslash S_{ij}} \psi_c(x_c) \prod_{\ell \in N(i) \backslash j} m_{\ell \to i}(S_{\ell i}).
 {% endmath %}
 
 We choose $$c^{(i)}, c^{(j)}$$ only if $$c^{(i)}$$ has received messages from all of its neighbors except $$c^{(j)}$$. Just as in belief propagation, this procedure will terminate in exactly {%m%}2|E_T|{%em%} steps. After it terminates, we will define the belief of each cluster based on all the messages that it receives
 {% math %}
-\beta_c(x_c) = \psi(x_c) \prod_{\ell \in N(i)} m_{\ell \to i}(S_{\ell i}).
+\beta_c(x_c) = \psi_c(x_c) \prod_{\ell \in N(i)} m_{\ell \to i}(S_{\ell i}).
 {% endmath %}
 
 These updates are often referred to as *Shafer-Shenoy*. After all the messages have been passed, beliefs will be proportional to the marginal probabilities over their scopes, i.e. $$\beta_c(x_c) \propto p(x_c)$$. We may answer queries of the form $$\tp(x)$$ for $$x \in x_c$$ by marginalizing out the variable in its belief{% sidenote 1 'Readers familiar with combinatorial optimization will recognize this as a special case of dynamic programming on a tree decomposition of a graph with bounded treewidth.'%}
@@ -196,7 +214,7 @@ Loopy belief propagation (LBP) is another technique for performing inference on 
 
 ### Definition for pairwise models
 
-Suppose that we a given an MRF with pairwise potentials{% sidenote 1 'Arbitrary potentials can be handled using an algorithm called LBP on *factor graphs*. We will include this material at some point in the future'%}.
+Suppose that we are given an MRF with pairwise potentials{% sidenote 1 'Arbitrary potentials can be handled using an algorithm called LBP on *factor graphs*. We will include this material at some point in the future'%}.
 The main idea of LBP is to disregard loops in the graph and perform message passing anyway. In other words, given an ordering on the edges, at each time $$t$$ we iterate over a pair of adjacent variables $$x_i, x_j$$ in that order and simply perform the update
 {% math %}
 m^{t+1}_{i\to j}(x_j) = \sum_{x_i} \phi(x_i) \phi(x_i,x_j) \prod_{\ell \in N(i) \setminus j} m^{t}_{\ell \to i}(x_i).
@@ -208,7 +226,7 @@ We keep performing these updates for a fixed number of steps or until convergenc
 
 This heuristic approach often works surprisingly well in practice.
 {% marginfigure 'mp1' 'assets/img/lbp-performance.png' 'Marginals obtained via LBP compared to true marginals obtained from the JT algorithm on an intensive care monitoring task. Results are close to the diagonal, hence very similar.'%}
-In general, however, it may not converges and its analysis is still an area of active research. We know for example that it provably converges on trees and on graphs with at most one cycle. If the method does converge, its beliefs may not necessarily equal the true marginals, although very often in practice they will be close.
+In general, however, it may not converge and its analysis is still an area of active research. We know for example that it provably converges on trees and on graphs with at most one cycle. If the method does converge, its beliefs may not necessarily equal the true marginals, although very often in practice they will be close.
 
 We will return to this algorithm later in the course and try to explain it as a special case of *variational inference* algorithms.
 

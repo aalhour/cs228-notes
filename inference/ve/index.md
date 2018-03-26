@@ -3,11 +3,11 @@ layout: post
 title: Variable Elimination
 ---
 Next, we turn our attention to the problem of *inference* in graphical models.
-Given a probabilistic model (such as a Bayes net on an MRF), we are interested in using it to answer useful questions, e.g. determining the probability that a given email is spam.  More formally, we will be focusing on two types of questions:
+Given a probabilistic model (such as a Bayes net or an MRF), we are interested in using it to answer useful questions, e.g., determining the probability that a given email is spam.  More formally, we will be focusing on two types of questions:
 
 - *Marginal inference*: what is the probability of a given variable in our model after we sum everything else out (e.g. probability of spam vs non-spam)?
 {% math %}
-p(y=1) = \sum_{x_2} \sum_{x_2}  \cdots \sum_{x_n} p(y=1,x_1, x_2, ..., x_n).
+p(y=1) = \sum_{x_1} \sum_{x_2}  \cdots \sum_{x_n} p(y=1,x_1, x_2, ..., x_n).
 {% endmath %}
 - *Maximum a posteriori (MAP) inference*: what is the most likely assignment to the variables in the model (possibly conditioned on evidence).
 {% math %}
@@ -21,7 +21,7 @@ This chapter covers the first exact inference algorithm, *variable elimination*.
 
 ## An illustrative example
 
-Consider first the problem of marginal inference. Suppose for simplicity that we a given a chain Bayesian network, i.e. a probability of the form
+Consider first the problem of marginal inference. Suppose for simplicity that we are given a chain Bayesian network, i.e. a probability of the form
 {% math %}
 p(x_1,...,x_n) = p(x_1) \prod_{i=2}^n p(x_i \mid x_{i-1}).
 {% endmath %}
@@ -72,7 +72,7 @@ The factor product operation simply defines the product $$\phi_3 := \phi_1 \time
 {% endmath %}
 The scope of $$\phi_3$$ is defined as the union of the variables in the scopes of $$\phi_1, \phi_2$$; also $$x_c^{(i)}$$ denotes an assignment to the variables in the scope of $$\phi_i$$ defined by the restriction of $$x_c$$ to that scope. For example, we define $$\phi_3(a,b,c) := \phi_1(a,b) \times \phi_2(b,c)$$.
 
-Next, the marginalization operation "locally" eliminates a set of variable from a factor. If we have a factor $$\phi(X,Y)$$ over two sets of variables $$X,Y$$, marginalizing $$Y$$ produces a new factor 
+Next, the marginalization operation "locally" eliminates a set of variables from a factor. If we have a factor $$\phi(X,Y)$$ over two sets of variables $$X,Y$$, marginalizing $$Y$$ produces a new factor 
 {% math %}
 \tau(x) = \sum_{y} \phi(x, y),
 {% endmath %}
@@ -99,6 +99,8 @@ More formally, for each variable $$X_i$$ (ordered according to $$O$$),
 1. Multiply all factors $$\Phi_i$$ containing $$X_i$$
 2. Marginalize out $$X_i$$ to obtain new factor $$\tau$$
 3. Replace the factors in $$\Phi_i$$ by $$\tau$$
+
+A former CS228 student has created an [interactive web simulation](http://pgmlearning.herokuapp.com/vElimApp) for visualizing the variable elimination algorithm. Feel free to play around with it and, if you do, please submit any feedback or bugs through the Feedback button on the web app.
 
 ### Examples
 

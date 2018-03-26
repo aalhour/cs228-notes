@@ -104,7 +104,7 @@
 
 <h3 id="a-message-passing-algorithm">A message-passing algorithm</h3>
 
-<p>A key question here is how exactly do we compute all the message we need. Notice for example, that the messages to <script type="math/tex">x_k</script> from the side of <script type="math/tex">x_i</script> will need to be recomputed.</p>
+<p>A key question here is how exactly do we compute all the messages we need. Notice for example, that the messages to <script type="math/tex">x_k</script> from the side of <script type="math/tex">x_i</script> will need to be recomputed.</p>
 
 <p>The answer is very simple: a node <script type="math/tex">x_i</script> sends a message to a neighbor <script type="math/tex">x_j</script> whenever it has received messages from all nodes besides <script type="math/tex">x_j</script>. It’s a fun exercise to the reader to show that there will always be a node with a message to send, unless all the messages have been sent out. This will happen after precisely <span>​<script type="math/tex">2|E|</script></span> steps, since each edge can receive messages only twice: once from <script type="math/tex">x_i \to x_j</script>, and once more in the opposite direction.</p>
 
@@ -124,9 +124,27 @@ m_{i\to j}(x_j) = \sum_{x_i} \phi(x_i) \phi(x_i,x_j) \prod_{\ell \in N(i) \setmi
 p(x_i) = \prod_{\ell \in N(i)} m_{\ell \to i}(x_i).
 </script></div>
 
+<h3 id="sum-product-message-passing-for-factor-trees">Sum-product message passing for factor trees</h3>
+
+<p>The sum-product message passing variant of belief propgation can also be applied to factor trees, with a slight modification. Recall that a factor graph is a bipartite graph with edges going between variables and factors, with an edge signifying a factor depends on a variable. We can perform VE on factor graphs through a modified version of the above algorithm.</p>
+
+<p>On factor graphs, we have two types of messages: variable-to-factor messages <script type="math/tex">\nu</script> and factor-to-variable messages <script type="math/tex">\mu</script>.</p>
+
+<figure><figcaption></figcaption><img src="/cs228-notes/assets/img/factor-graph-messages.png" /></figure>
+
+<p>Both messages require taking a product, but only the factor-to-variable messages <script type="math/tex">\mu</script> require a sum.</p>
+
+<div class="mathblock"><script type="math/tex; mode=display">
+\nu_{var(i)\to fac(s)}(x_i) = \prod_{t\in\mathcal N(i)\setminus s}\mu_{fac(t)\to var(i)}(x_i) \\
+
+\mu_{fac(s)\to var(i)}(x_i) = \sum_{x_{\mathcal N(s)\setminus i}}f_s(x_{\mathcal N(s)})\prod_{t\in\mathcal N(i)\setminus s}\nu_{var(j)\to fac(s)}(x_j)
+</script></div>
+
+<p>So now the algorithm proceeds in the same way as above: as long as there is a factor or variable ready to transmit to a variable or factor, respectively, send the appropriate factor-to-variable or variable-to-factor message as defined above.</p>
+
 <h3 id="max-product-message-passing">Max-product message passing</h3>
 
-<p>So far, we have said very little about the second type of inference we are interested to perform, which are MAP queries</p>
+<p>So far, we have said very little about the second type of inference we are interested in performing, which are MAP queries</p>
 <div class="mathblock"><script type="math/tex; mode=display">
 \max_{x_1, \dots, x_n} p(x_1,...,x_n).
 </script></div>
@@ -151,9 +169,9 @@ Z
 \end{align*}
 </script></div>
 
-<p>The key property that makes this work is the distributivity of both the sum and the max operator over products. Since both problems are essentially equivalent (after swapping the corresponding operators), we may reuse all of the machinery developed for marginal inference and apply it directly to MAP inference.</p>
+<p>The key property that makes this work is the distributivity of both the sum and the max operator over products. Since both problems are essentially equivalent (after swapping the corresponding operators), we may reuse all of the machinery developed for marginal inference and apply it directly to MAP inference. Note that this also applies to factor trees.</p>
 
-<p>There is a small caveat in that we often want not just the mode of a distribution, but also its most probable assignment. This problem can be easily solved by keeping <em>back-pointers</em> during the optimization procedure. For instance, in the above example, we would keep a backpointer to the best assignment to <script type="math/tex">x_1</script> given each assignment to <script type="math/tex">x_2</script>, a pointer to the best assignment to <script type="math/tex">x_2</script> given each assignment to <script type="math/tex">x_3</script>, and so on.</p>
+<p>There is a small caveat in that we often want not just the mode of a distribution, but also its most probable assignment. This problem can be easily solved by keeping <em>back-pointers</em> during the optimization procedure. For instance, in the above example, we would keep a backpointer to the best assignment to <script type="math/tex">x_1</script> given each assignment to <script type="math/tex">x_2</script>, a pointer to the best assignment to <script type="math/tex">x_2</script> given each assignment to <script type="math/tex">x_3,</script> and so on.</p>
 
 <h2 id="junction-tree-algorithm">Junction tree algorithm</h2>
 
@@ -170,7 +188,7 @@ Z
 p(x_1,..,x_n) = \frac{1}{Z} \prod_{c \in C} \phi_c(x_c),
 </script></div>
 
-<p>Crucially, we will assume that the cliques <script type="math/tex">c</script> have a form of path structure, meaning that we can find an ordering <script type="math/tex">x_c^{(1)}, ..., x_c^{(n)}</script> with the property that if <script type="math/tex">x_i \in x_c^{(j)}</script> and <script type="math/tex">x_i \in x_c^{(k)}</script> for some variable <script type="math/tex">x_i</script> then <script type="math/tex">x_i \in x_c^{(\ell)}</script> for all <script type="math/tex">x_c^{(\ell)}</script> on the path between <script type="math/tex">x_c^{(j)}</script> and <script type="math/tex">x_c^{(k)}</script>. We refer to this assumption as the <em>running intersection</em> (RIP) property.</p>
+<p>Crucially, we will assume that the cliques <script type="math/tex">c</script> have a form of path structure, meaning that we can find an ordering <script type="math/tex">x_c^{(1)}, ..., x_c^{(n)}</script> with the property that if <script type="math/tex">x_i \in x_c^{(j)}</script> and <script type="math/tex">x_i \in x_c^{(k)}</script> for some variable <script type="math/tex">x_i</script> then <script type="math/tex">x_i \in x_c^{(\ell)}</script> for all <script type="math/tex">x_c^{(\ell)}</script> on the path between <script type="math/tex">x_c^{(j)}</script> and <script type="math/tex">x_c^{(k)}</script>. We refer to this assumption as the <em>running intersection</em> property (RIP).</p>
 <figure><figcaption>A chain MRF whose cliques are organized into a chain structure. Round nodes represent cliques and the variables in their scope; rectangular nodes indicate sepsets, which are variables forming the intersection of the scopes of two neighboring cliques</figcaption><img src="/cs228-notes/assets/img/junctionpath.png" /></figure>
 
 <p>Suppose that we are interested in computing the marginal probability <script type="math/tex">p(x_1)</script> in the above example. Given our assumptions, we may again use a form of variable elimination to 
@@ -197,7 +215,7 @@ A junction tree <script type="math/tex">T=(C, E_T)</script> over <script type="m
   <li><em>Running intersection</em>: For every pair of clusters <script type="math/tex">c^{(i)}, c^{(j)}</script>, every cluster on the path between <script type="math/tex">c^{(i)}, c^{(j)}</script> contains <script type="math/tex">x_c^{(i)} \cap x_c^{(j)}</script>.</li>
 </ul>
 
-<p>Here is an example of an MRF with graph <script type="math/tex">G</script> and junction tree <script type="math/tex">T</script>. MRF potentials are denoted using different colors; circles indicates nodes of the junction trees; rectangular nodes represent <em>sepsets</em>, which are sets of variables shared by neighboring clusters.</p>
+<p>Here is an example of an MRF with graph <script type="math/tex">G</script> and junction tree <script type="math/tex">T</script>. MRF potentials are denoted using different colors; circles indicates nodes of the junction trees; rectangular nodes represent <em>sepsets</em> (short for “separation sets”), which are sets of variables shared by neighboring clusters.</p>
 
 <figure><figcaption>An MRF with graph G and its junction tree T.</figcaption><img src="/cs228-notes/assets/img/junctiontree.png" /></figure>
 <p><label for="jtt" class="margin-toggle">⊕</label><input type="checkbox" id="jtt" class="margin-toggle" /><span class="marginnote"><img class="fullwidth" src="/cs228-notes/assets/img/jt-over-tree.png" /><br />A junction tree defined over a tree graph. Clusters correspond to edges.</span>
@@ -205,7 +223,7 @@ A junction tree <script type="math/tex">T=(C, E_T)</script> over <script type="m
 
 <p>Note that we may always find a trivial junction tree with one node containing all the variables in the original graph. However, such trees are useless because they will not result in efficient marginalization algorithms.</p>
 
-<p>Optimal trees are one that make the clusters as small and modular as possible; unfortunately, it is again NP-hard to find the optimal tree. We will see below some practical ways in which we can find good junction trees</p>
+<p>Optimal trees are one that make the clusters as small and modular as possible; unfortunately, it is again NP-hard to find the optimal tree. We will see below some practical ways in which we can find good junction trees.</p>
 
 <p>A special case when we <em>can</em> find the optimal junction tree is when <script type="math/tex">G</script> itself is a tree. In that case, we may define a cluster for each edge in the tree. It is not hard to check that the result satisfies the above definition.</p>
 
@@ -220,12 +238,12 @@ p(x_1,..,x_n) = \frac{1}{Z} \prod_{c \in C} \psi_c(x_c).
 
 <p>Then, at each step of the algorithm, we choose a pair of adjacent clusters <script type="math/tex">c^{(i)}, c^{(j)}</script> in <script type="math/tex">T</script> and compute a message whose scope is the sepset <script type="math/tex">S_{ij}</script> between the two clusters:</p>
 <div class="mathblock"><script type="math/tex; mode=display">
-m_{i\to j}(S_{ij}) = \sum_{x_c \backslash S_{ij}} \psi(x_c) \prod_{\ell \in N(i) \backslash j} m_{\ell \to i}(S_{\ell i}).
+m_{i\to j}(S_{ij}) = \sum_{x_c \backslash S_{ij}} \psi_c(x_c) \prod_{\ell \in N(i) \backslash j} m_{\ell \to i}(S_{\ell i}).
 </script></div>
 
 <p>We choose <script type="math/tex">c^{(i)}, c^{(j)}</script> only if <script type="math/tex">c^{(i)}</script> has received messages from all of its neighbors except <script type="math/tex">c^{(j)}</script>. Just as in belief propagation, this procedure will terminate in exactly <span>​<script type="math/tex">2|E_T|</script></span> steps. After it terminates, we will define the belief of each cluster based on all the messages that it receives</p>
 <div class="mathblock"><script type="math/tex; mode=display">
-\beta_c(x_c) = \psi(x_c) \prod_{\ell \in N(i)} m_{\ell \to i}(S_{\ell i}).
+\beta_c(x_c) = \psi_c(x_c) \prod_{\ell \in N(i)} m_{\ell \to i}(S_{\ell i}).
 </script></div>
 
 <p>These updates are often referred to as <em>Shafer-Shenoy</em>. After all the messages have been passed, beliefs will be proportional to the marginal probabilities over their scopes, i.e. <script type="math/tex">\beta_c(x_c) \propto p(x_c)</script>. We may answer queries of the form <script type="math/tex">\tp(x)</script> for <script type="math/tex">x \in x_c</script> by marginalizing out the variable in its belief<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle" /><span class="sidenote">Readers familiar with combinatorial optimization will recognize this as a special case of dynamic programming on a tree decomposition of a graph with bounded treewidth. </span></p>
@@ -272,7 +290,7 @@ m_{i\to j}(S_{ij}) = \sum_{x_c \backslash S_{ij}} \psi(x_c) \prod_{\ell \in N(i)
 
 <h3 id="definition-for-pairwise-models">Definition for pairwise models</h3>
 
-<p>Suppose that we a given an MRF with pairwise potentials<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle" /><span class="sidenote">Arbitrary potentials can be handled using an algorithm called LBP on <em>factor graphs</em>. We will include this material at some point in the future </span>.
+<p>Suppose that we are given an MRF with pairwise potentials<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle" /><span class="sidenote">Arbitrary potentials can be handled using an algorithm called LBP on <em>factor graphs</em>. We will include this material at some point in the future </span>.
 The main idea of LBP is to disregard loops in the graph and perform message passing anyway. In other words, given an ordering on the edges, at each time <script type="math/tex">t</script> we iterate over a pair of adjacent variables <script type="math/tex">x_i, x_j</script> in that order and simply perform the update</p>
 <div class="mathblock"><script type="math/tex; mode=display">
 m^{t+1}_{i\to j}(x_j) = \sum_{x_i} \phi(x_i) \phi(x_i,x_j) \prod_{\ell \in N(i) \setminus j} m^{t}_{\ell \to i}(x_i).
@@ -284,7 +302,7 @@ m^{t+1}_{i\to j}(x_j) = \sum_{x_i} \phi(x_i) \phi(x_i,x_j) \prod_{\ell \in N(i) 
 
 <p>This heuristic approach often works surprisingly well in practice.
 <label for="mp1" class="margin-toggle">⊕</label><input type="checkbox" id="mp1" class="margin-toggle" /><span class="marginnote"><img class="fullwidth" src="/cs228-notes/assets/img/lbp-performance.png" /><br />Marginals obtained via LBP compared to true marginals obtained from the JT algorithm on an intensive care monitoring task. Results are close to the diagonal, hence very similar.</span>
-In general, however, it may not converges and its analysis is still an area of active research. We know for example that it provably converges on trees and on graphs with at most one cycle. If the method does converge, its beliefs may not necessarily equal the true marginals, although very often in practice they will be close.</p>
+In general, however, it may not converge and its analysis is still an area of active research. We know for example that it provably converges on trees and on graphs with at most one cycle. If the method does converge, its beliefs may not necessarily equal the true marginals, although very often in practice they will be close.</p>
 
 <p>We will return to this algorithm later in the course and try to explain it as a special case of <em>variational inference</em> algorithms.</p>
 
@@ -331,8 +349,8 @@ In general, however, it may not converges and its analysis is still an area of a
   <!--      -->
   <!-- </ul> -->
 <div class="credits">
-<!-- <span>&#38;copy; 2017 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
-<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2017</span> 
+<!-- <span>&#38;copy; 2018 <!&#45;&#45; &#38;#38;nbsp;&#38;#38;nbsp;VOLODYMYR KULESHOV &#45;&#45;></span></br> <br> -->
+<span>Site created with <a href="//jekyllrb.com">Jekyll</a> using the <a href="//github.com/clayh53/tufte-jekyll">Tufte theme</a>. &copy; 2018</span> 
 </div>  
 </footer>
 

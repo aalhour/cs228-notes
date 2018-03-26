@@ -29,9 +29,9 @@ A compact Bayesian network is a distribution in which each factor on the right h
 {% math %} 
 p(x_i \mid  x_{i-1}...x_1) = p(x_i \mid  x_{A_i}). 
 {% endmath %}
-For example, in a model with five variables, we may choose to approximate the factor {%m%}p(x_5\mid x_4, x_3, x_2, x_1){%em%} with {%m%}p(x_5 \mid  x_4, x_3){%em%}. In this case, we write $$x_{A_i} = \{x_4, x_3\}$$.
+For example, in a model with five variables, we may choose to approximate the factor {%m%}p(x_5\mid x_4, x_3, x_2, x_1){%em%} with {%m%}p(x_5 \mid  x_4, x_3){%em%}. In this case, we write $$x_{A_5} = \{x_4, x_3\}$$.
 
-When the variables are discrete (which will be often be the case in the problem we will consider), we may think of the factors {%m%}p(x_i\mid x_{A_i}){%em%} as *probability tables*, in which rows correspond to assignments to $$x_{A_i}$$ and columns correspond to values of $$x_i$$; the entries contain the actual probabilities {%m%}p(x_i\mid x_{A_i}){%em%}. If each variable takes $$d$$ values and has at most $$k$$ ancestors, then the entire table will contain at most $$O(d^{k+1})$$ entries. Since we have one table per variable, the entire probability distribution can be compactly described with only $$O(nd^k)$$ parameters (compared to $$O(d^n)$$ with a naive approach).
+When the variables are discrete (which will be often be the case in the problem we will consider), we may think of the factors {%m%}p(x_i\mid x_{A_i}){%em%} as *probability tables*, in which rows correspond to assignments to $$x_{A_i}$$ and columns correspond to values of $$x_i$$; the entries contain the actual probabilities {%m%}p(x_i\mid x_{A_i}){%em%}. If each variable takes $$d$$ values and has at most $$k$$ ancestors, then the entire table will contain at most $$O(d^{k+1})$$ entries. Since we have one table per variable, the entire probability distribution can be compactly described with only $$O(nd^{k+1})$$ parameters (compared to $$O(d^n)$$ with a naive approach).
 
 ### Graphical representation.
 
@@ -96,6 +96,7 @@ We say that $$Q$$, $$W$$ are $$d$$-separated when variables $$O$$ are observed i
 
 For example, in the graph below, $$X_1$$ and $$X_6$$ are $$d$$-separated given $$X_2, X_3$$. However, $$X_2, X_3$$ are not $$d$$-separated given $$X_1, X_6$$, because we can find an active path $$(X_2, X_6, X_5, X_3)$$
 
+A former CS228 student has created an [interactive web simulation](http://pgmlearning.herokuapp.com/dSepApp) for testing $$d$$-separation. Feel free to play around with it and, if you do, please submit any feedback or bugs through the Feedback button on the web app.
 
 The notion of $$d$$-separation is  useful, because it lets us describe a large fraction of the dependencies that hold in our model.
 Let {%m%}I(G) = \{(X \perp Y \mid  Z) : \text{$$X,Y$$ are $$d$$-sep given $$Z$$}\}{%em%} be a set of variables that are $$d$$-separated in $$G$$.
