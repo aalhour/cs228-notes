@@ -39,7 +39,7 @@ event $$B$$.
 
 ## 1.2 Chain Rule
 
-Let $$S_1, \cdots, S_k$$ be events, $$P(S_i) >0$$. Then
+Let $$S_1, \cdots, S_k$$ be events, $$P(S_i) >0$$. Then the chain rule states that:
 
 {% math %}
 \begin{aligned}
@@ -48,13 +48,13 @@ Let $$S_1, \cdots, S_k$$ be events, $$P(S_i) >0$$. Then
 \end{aligned}
 {% endmath %}
 
-Note that for $$k=2$$ events, this is just the definition of conditional probability
+Note that for $$k=2$$ events, this is just the definition of conditional probability:
 
 \begin{equation}
 P(S_1 \cap S_2) = P(S_1) P(S_2 | S_1)
 \end{equation}
 
-In general, it is derived by applying the definition of conditional independence multiple times, as in the following example
+In general, the chain rule is derived by applying the definition of conditional independence multiple times, as in the following example:
 
 {% math %}
 \begin{aligned}
@@ -82,7 +82,7 @@ technical conditions, are known as **random variables**.
 More formally, a random variable $$X$$ is a function $$X : \Omega \rightarrow \mathbb{R}$$. Typically, we will denote random
 variables using upper case letters $$X(\omega)$$ or more simply $$X$$ (where the dependence on the random
 outcome $$\omega$$ is implied). We will denote the value that a random variable may take on using lower
-case letters $$x$$.
+case letters $$x$$. Thus, $$X = x$$ means that we are assigning the value $$x \in \mathbb{R}$$ to the random variable $$X$$.
 
 **Example**: In our experiment above, suppose that $$X(\omega)$$ is the number of heads which occur in the
 sequence of tosses $$ω$$. Given that only 10 coins are tossed, $$X(\omega)$$ can take only a finite number of
@@ -107,7 +107,7 @@ By using this function one can calculate the probability of any event.
 <!--Figure 1: A cumulative distribution function (CDF).-->
 - $$0 \leq  F_X(x) \leq  1$$.
 - $$lim_{x \rightarrow -\infty} F_X(x) = 0$$.
-- $$lim_{x \rightarrow \infty} F_X(x) = 1$$.
+- $$lim_{x \rightarrow +\infty} F_X(x) = 1$$.
 - $$x \leq y ⇒ F_X(x) \leq F_X(y)$$.
 
 
